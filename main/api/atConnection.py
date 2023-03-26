@@ -18,6 +18,9 @@ class AtConnection:
 
 	def disconnect():
 		return False
+	
+	def executeCommand(command):
+		return None
 
 	def __init__(self, host, port):
 		self.host = host
