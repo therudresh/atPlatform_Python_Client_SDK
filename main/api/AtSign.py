@@ -40,5 +40,22 @@ class AtSign:
 
 	def __init__(self, atSign):
 		self.atSign = atSign
-		# Set up connection to secondary server
-		# self.atConnection = AtConnection
+		  # Set up socket connection to root server
+        root_server_address = #root_address
+        root_server_port = 3000
+        root_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        root_server_socket.connect((root_server_address, root_server_port))
+
+        # Set up socket connection to secondary server domain
+        secondary_server_address = #secondaryaddress
+        secondary_server_port = 8000
+        secondary_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        secondary_server_socket.connect((secondary_server_address, secondary_server_port))
+
+        # Set up socket connection with secondary server
+        secondary_server_socket.sendall('CONNECT {}'.format(atSign).encode())
+        response = secondary_server_socket.recv(1024)
+        if response == b'OK':
+            self.atConnection = AtConnection(root_server_socket, secondary_server_socket)
+        else:
+            raise ConnectionError('Failed to connect to secondary server')
