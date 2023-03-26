@@ -1,5 +1,5 @@
 import time
-import usocket as socket
+import socket
 import sys
 import ssl
 

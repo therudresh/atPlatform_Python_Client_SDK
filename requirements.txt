@@ -1,0 +1,2 @@
+pycryptodome==3.17
+pyOpenSSL==23.1.0

@@ -1,4 +1,4 @@
-from AtConnection import atConnection
+from atConnection import AtConnection
 
 class AtSign:
 	atSign = ""
