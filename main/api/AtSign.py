@@ -43,7 +43,6 @@ class AtSign:
 	def monitor():
 		return True
 
-
 	def __init__(self, atSign : str):
 		if(atSign[0] == '@'):
 			self.atSign = atSign
