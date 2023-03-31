@@ -1,11 +1,17 @@
 from atConnection import AtConnection
+import ssl
+import socket
+import time
+import sys
 
 class AtSign:
 	atSign = ""
 	
-	atConnection = None
-
-	keyManager = None
+	rootHostname = 'root.atsign.org'
+	rootPort = 64
+	rootAtConnection = AtConnection(rootHostname, rootPort, ssl.create_default_context())
+	
+	secondaryAtConnection = None
 
 	def authenticate(): ## `from` protocol
 		return True
@@ -37,25 +43,19 @@ class AtSign:
 	def monitor():
 		return True
 
+	def __init__(self, atSign : str):
+		if(atSign[0] == '@'):
+			self.atSign = atSign
+		else:
+			self.atSign = "@" + atSign
+		rootAtConnection.connect()
+		rootAtConnection.write(atSign[1:].encode())
 
-	def __init__(self, atSign):
-		self.atSign = atSign
-		  # Set up socket connection to root server
-        root_server_address = #root_address
-        root_server_port = 3000
-        root_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        root_server_socket.connect((root_server_address, root_server_port))
+		confirmationResponse = rootAtConnection.read().replace('\r\n', '')
+		rootAtConnection.write((confirmationResponse + atSign[1:] + "\n").encode())
 
-        # Set up socket connection to secondary server domain
-        secondary_server_address = #secondaryaddress
-        secondary_server_port = 8000
-        secondary_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        secondary_server_socket.connect((secondary_server_address, secondary_server_port))
-
-        # Set up socket connection with secondary server
-        secondary_server_socket.sendall('CONNECT {}'.format(atSign).encode())
-        response = secondary_server_socket.recv(1024)
-        if response == b'OK':
-            self.atConnection = AtConnection(root_server_socket, secondary_server_socket)
-        else:
-            raise ConnectionError('Failed to connect to secondary server')
+		#### Make this less error pruned :)
+		secondaryAtResponse = rootAtConnection.read().replace('\r\n', '').split(':')
+		secondaryHostname = secondaryAtResponse[0]
+		secondaryPort = secondaryAtResponse[1]
+		secondaryAtConnection = AtConnection(rootHostname, rootPort, ssl.create_default_context())
