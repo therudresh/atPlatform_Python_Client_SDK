@@ -1,4 +1,6 @@
-from atConnection import AtConnection
+from .atConnection import AtConnection
+from . import EncryptionUtil
+from .keysUtil import KeysUtil
 import ssl
 import socket
 import time
@@ -13,34 +15,59 @@ class AtSign:
 	
 	secondaryAtConnection = None
 
-	def authenticate(): ## `from` protocol
-		return True
+	def authenticate(self, keys): ## `from` protocol
+		fromResponse = secondaryAtConnection.write(f"from:{self.atSign}")
+
+		data_prefix = "data:"
+		if not from_response.startswith(data_prefix):
+			raise Exception(f"Invalid response to 'from' command: {from_response}")
+		
+		from_response = from_response[len(data_prefix):]
+
+		privateKey = None
+		try:
+			privateKey = EncryptionUtil.privateKeyFromBase64(keys[KeysUtil.pkamPrivateKeyName])
+		except:
+			raise Exception("Failed to get private key from stored string")
+		
+		signature = None
+		try:
+			signature = EncryptionUtil.signSHA256RSA(fromResponse, privateKey)
+		except:
+			raise Exception("Failed to create SHA256 signature")
+		
+		pkamResponse = secondaryAtConnection.write(f"pkam:{signature}")
+
+		print(pkamResponse)
+
+		if not pkamResponse.startsWith("data:success"):
+			raise Exception(f"PKAM command failed: {pkamResponse}")
 
 	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
-	def lookUp():
+	def lookUp(self):
 		return True
 
 	def connectToAtSign(atSign):
 		return True
 
-	def update():
+	def update(self):
 		return True
 
-	def delete():
+	def delete(self):
 		return True
 
 
 	## Good to have functions
-	def stats():
+	def stats(self):
 		return True
 
-	def sync():
+	def sync(self):
 		return True
 
-	def notify():
+	def notify(self):
 		return True
 
-	def monitor():
+	def monitor(self):
 		return True
 
 	def __init__(self, atSign : str):
@@ -59,3 +86,10 @@ class AtSign:
 		secondaryHostname = secondaryAtResponse[0]
 		secondaryPort = secondaryAtResponse[1]
 		secondaryAtConnection = AtConnection(rootHostname, rootPort, ssl.create_default_context())
+
+
+if __name__ == "__main__":
+	keys = KeysUtil.loadKeys("27barracuda")
+
+	atsign = AtSign("@wildgreen")
+	atsign.authenticate()
