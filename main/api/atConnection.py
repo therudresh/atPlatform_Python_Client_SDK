@@ -34,12 +34,12 @@ class AtConnection:
 
 	def connect():
 		try:
-		    _socket.connect(addrInfo)
+			_socket.connect(addrInfo)
 		except OSError as e:
-		    if str(e) == '119':
-		        print("In Progress")
-		    else:
-		        raise e
+			if str(e) == '119':
+				print("In Progress")
+			else:
+				raise e
 		connected = True
 
 	def disconnect():

@@ -1,7 +1,5 @@
 import time
-import usocket as socket
-# import ussl as ssl
-import sys
+import socket
 import ssl
 
 atSign = '27barracuda'
@@ -26,14 +24,12 @@ except OSError as e:
     else:
         raise e
 
-
 context = ssl.create_default_context()
 # context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 # context.load_cert_chain(certfile="certificate.pem", keyfile="private_key.pem")
 
 # s.setblocking(False)
-ss = context.wrap_socket(s, server_hostname=hostname, do_handshake_on_connect = True)
-# ss = s
+ss = context.wrap_socket(s, server_hostname=hostname, do_handshake_on_connect=True)
 
 print('Writing to socket: @'+ atSign)
 ss.write((atSign + "\n").encode())
