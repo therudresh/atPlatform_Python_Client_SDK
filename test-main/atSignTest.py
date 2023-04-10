@@ -8,12 +8,12 @@ class AtSignTest(unittest.TestCase):
     keys = None
 
     def setUp(self) -> None:
-        keys = KeysUtil.loadKeys("@27barracuda")
+        self.keys = KeysUtil.loadKeys("@27barracuda")
         return super().setUp()
     
     def testAtSignAuthentication(self):
         atsign = AtSign("@27barracuda")
-        atsign.authenticate()
+        atsign.authenticate(self.keys)
         self.assertTrue(True)
 
 if __name__ == '__main__':

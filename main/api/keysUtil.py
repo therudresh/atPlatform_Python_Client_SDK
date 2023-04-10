@@ -52,10 +52,10 @@ class KeysUtil:
         selfEncryptionKey = encryptedKeys[KeysUtil.selfEncryptionKeyName]
         keys = {
             KeysUtil.selfEncryptionKeyName: selfEncryptionKey,
-            KeysUtil.pkamPublicKeyName: EncryptionUtil.decryptAesFromBase64(encryptedKeys[KeysUtil.pkamPublicKeyName], selfEncryptionKey),
-            KeysUtil.pkamPrivateKeyName: EncryptionUtil.decryptAesFromBase64(encryptedKeys[KeysUtil.pkamPrivateKeyName], selfEncryptionKey),
-            KeysUtil.encryptionPublicKeyName: EncryptionUtil.decryptAesFromBase64(encryptedKeys[KeysUtil.encryptionPublicKeyName], selfEncryptionKey),
-            KeysUtil.encryptionPrivateKeyName: EncryptionUtil.decryptAesFromBase64(encryptedKeys[KeysUtil.encryptionPrivateKeyName], selfEncryptionKey),
+            KeysUtil.pkamPublicKeyName: EncryptionUtil.aesDecryptFromBase64(encryptedKeys[KeysUtil.pkamPublicKeyName], selfEncryptionKey),
+            KeysUtil.pkamPrivateKeyName: EncryptionUtil.aesDecryptFromBase64(encryptedKeys[KeysUtil.pkamPrivateKeyName], selfEncryptionKey),
+            KeysUtil.encryptionPublicKeyName: EncryptionUtil.aesDecryptFromBase64(encryptedKeys[KeysUtil.encryptionPublicKeyName], selfEncryptionKey),
+            KeysUtil.encryptionPrivateKeyName: EncryptionUtil.aesDecryptFromBase64(encryptedKeys[KeysUtil.encryptionPrivateKeyName], selfEncryptionKey),
         }
 
         return keys
