@@ -133,3 +133,5 @@ dmypy.json
 .pyre/
 
 keys/
+
+.DS_Store
