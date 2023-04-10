@@ -1,10 +1,9 @@
+import ssl, time
+
 from .atConnection import AtConnection
-from . import EncryptionUtil
+from .EncryptionUtil import EncryptionUtil
 from .keysUtil import KeysUtil
-import ssl
-import socket
-import time
-import sys
+
 
 class AtSign:
 	atSign = ""
@@ -16,44 +15,33 @@ class AtSign:
 	secondaryAtConnection = None
 
 	def authenticate(self, keys): ## `from` protocol
-		print(self.secondaryAtConnection)
-		self.secondaryAtConnection.write(f"from:{self.atSign}\n")
-		# time.sleep(2)
-		self.secondaryAtConnection.read()
-		fromResponse = self.secondaryAtConnection.read()
-		# self.secondaryAtConnection.write(f"from:@27barracuda\n")
-		# time.sleep(15)
-		# fromResponse = self.secondaryAtConnection.read()
-		# print("from response : ", fromResponse)
+		privateKey = signature = None
+		self.secondaryAtConnection.write(f"from:{self.atSign}")
+		fromResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
 
 		dataPrefix = "data:"
 		if not fromResponse.startswith(dataPrefix):
-			raise Exception(f"Invalid response to 'from' command: {fromResponse}")
+			raise Exception(f"Invalid response to 'from' command: {repr(fromResponse)}")
 		
-		fromResponse = fromResponse[len(dataPrefix):]
+		fromResponse = fromResponse[len(dataPrefix):-1]
 
-		privateKey = None
 		try:
 			privateKey = EncryptionUtil.privateKeyFromBase64(keys[KeysUtil.pkamPrivateKeyName])
 		except:
 			raise Exception("Failed to get private key from stored string")
 		
-		signature = None
 		try:
 			signature = EncryptionUtil.signSHA256RSA(fromResponse, privateKey)
 		except:
 			raise Exception("Failed to create SHA256 signature")
 		
 		self.secondaryAtConnection.write(f"pkam:{signature}")
-		# time.sleep(2)
 		pkamResponse = self.secondaryAtConnection.read()
 
-		print("XXXXXXXX", pkamResponse)
-
-		EncryptionUtil.verify(keys[KeysUtil.pkamPublicKeyName], signature, fromResponse)
-		input()
 		if not pkamResponse.startswith("data:success"):
-			raise Exception(f"PKAM command failed: {pkamResponse}")
+			raise Exception(f"PKAM command failed: {repr(pkamResponse)}")
+		
+		print("Authentication Successful")
 
 	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
 	def lookUp(self):
@@ -91,21 +79,24 @@ class AtSign:
 		self.rootAtConnection.write(atSign[1:])
 
 		confirmationResponse =	self.rootAtConnection.read().replace('\r\n', '')
-		print("((((()))))", confirmationResponse)
+
+		if confirmationResponse == "@":
+			print("Root connection successful")
+		else:
+			raise Exception("Root connection failed!!!")
+		
 		self.rootAtConnection.write(atSign[1:])
 		time.sleep(2)
 
 		#### Make this less error pruned :)
 		secondaryAtResponse =	self.rootAtConnection.read().replace('\r\n', '').replace('@','').split(':')
-		print("$$$$$$", secondaryAtResponse)
+		
 		secondaryHostname = secondaryAtResponse[0]
 		secondaryPort = secondaryAtResponse[1]
 		self.secondaryAtConnection = AtConnection(secondaryHostname, secondaryPort, ssl.create_default_context())
 		self.secondaryAtConnection.connect()
-
-
-if __name__ == "__main__":
-	keys = KeysUtil.loadKeys("27barracuda")
-
-	atsign = AtSign("@wildgreen")
-	atsign.authenticate()
+		confirmationResponse =	self.secondaryAtConnection.read().replace('\r\n', '')
+		if confirmationResponse == "@":
+			print("Secondary server connection successful")
+		else:
+			raise Exception("Secondary server connection failed!!!")

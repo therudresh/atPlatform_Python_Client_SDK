@@ -19,10 +19,7 @@ class AtConnection:
 		
 		if(not data.endswith("\n")):
 			modData += "\n" 
-			print("HERE!!!!")
-
-		print("\n\n@@@@", modData)
-		print("%%%%%%%%", self.secureRootSocket)
+			
 		self.secureRootSocket.write(modData.encode())
 
 	def read(self):

@@ -3,7 +3,7 @@ import json
 import base64
 from typing import Dict, Tuple
 
-from . import EncryptionUtil
+from .EncryptionUtil import EncryptionUtil
 
 
 class KeysUtil:
@@ -27,10 +27,10 @@ class KeysUtil:
         selfEncryptionKey = keys[KeysUtil.selfEncryptionKeyName]
         encryptedKeys = {
             KeysUtil.selfEncryptionKeyName: selfEncryptionKey,
-            KeysUtil.pkamPublicKeyName: EncryptionUtil.encryptAesToBase64(keys[KeysUtil.pkamPublicKeyName], selfEncryptionKey),
-            KeysUtil.pkamPrivateKeyName: EncryptionUtil.encryptAesToBase64(keys[KeysUtil.pkamPrivateKeyName], selfEncryptionKey),
-            KeysUtil.encryptionPublicKeyName: EncryptionUtil.encryptAesToBase64(keys[KeysUtil.encryptionPublicKeyName], selfEncryptionKey),
-            KeysUtil.encryptionPrivateKeyName: EncryptionUtil.encryptAesToBase64(keys[KeysUtil.encryptionPrivateKeyName], selfEncryptionKey),
+            KeysUtil.pkamPublicKeyName: EncryptionUtil.aesEncryptFromBase64(keys[KeysUtil.pkamPublicKeyName], selfEncryptionKey),
+            KeysUtil.pkamPrivateKeyName: EncryptionUtil.aesEncryptFromBase64(keys[KeysUtil.pkamPrivateKeyName], selfEncryptionKey),
+            KeysUtil.encryptionPublicKeyName: EncryptionUtil.aesEncryptFromBase64(keys[KeysUtil.encryptionPublicKeyName], selfEncryptionKey),
+            KeysUtil.encryptionPrivateKeyName: EncryptionUtil.aesEncryptFromBase64(keys[KeysUtil.encryptionPrivateKeyName], selfEncryptionKey),
         }
 
         jsonData = json.dumps(encryptedKeys, indent=4)
