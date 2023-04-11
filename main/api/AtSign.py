@@ -44,14 +44,56 @@ class AtSign:
 		print("Authentication Successful")
 
 	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
-	def lookUp(self):
-		return True
+	def LookUp(self, key : str, location : str):
+		uLocation = location
+		if(location[0] != '@'):
+			uLocation = "@" + uLocation
+
+		self.secondaryAtConnection.write(f"lookup:{key}{uLocation}")
+		lookupResponse = self.secondaryAtConnection.read().replace('\n', '').strip()[:-1]
+
+		return lookupResponse
+
+	def llookUp(self, key : str):
+		self.secondaryAtConnection.write(f"llookup:{key}{self.atSign}")
+
+		prefix = "data:"
+		lookupResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+
+		if(not lookupResponse.startswith(prefix)):
+			print("llookup failed")
+		else:
+			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
+
+		return lookupResponse
 
 	def connectToAtSign(atSign):
 		return True
 
-	def update(self):
-		return True
+	def update(self, key : str, value : str, location : str):
+		uLocation = location
+		if(location[0] != '@'):
+			uLocation = "@" + uLocation
+		self.secondaryAtConnection.write(f"update:{uLocation}:{key}{self.atSign} {value}")
+		updateResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+
+		if("data:" in updateResponse):
+			return True
+		else:
+			print(f"Update Failed: {updateResponse}")
+			return False
+
+
+	def lupdate(self, key : str, value : str):
+		self.secondaryAtConnection.write(f"update:{key}{self.atSign} {value}")
+		updateResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+
+		if("data:" in updateResponse):
+			return True
+		else:
+			print(f"Self Update Failed: {updateResponse}")
+			return False
+		
 
 	def delete(self):
 		return True

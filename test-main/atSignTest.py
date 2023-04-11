@@ -7,14 +7,16 @@ class AtSignTest(unittest.TestCase):
     keys = None
 
     def setUp(self) -> None:
-        self.keys = KeysUtil.loadKeys("@27barracuda")
+        self.keys = KeysUtil.loadKeys("@19total67")
         return super().setUp()
     
     def testAtSignAuthentication(self):
         print()
-        atsign = AtSign("@27barracuda")
+        atsign = AtSign("@19total67")
         atsign.authenticate(self.keys)
-        self.assertTrue(True)
+        atsign.lupdate("foo", "bar")
+        response = atsign.llookUp("foo")
+        self.assertTrue(response == "bar")
 
 if __name__ == '__main__':
     loader = unittest.TestLoader()
