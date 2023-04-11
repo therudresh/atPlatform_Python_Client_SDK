@@ -1,5 +1,4 @@
 import unittest
-import sys
 
 from main.api.AtSign import AtSign
 from main.api.keysUtil import KeysUtil
@@ -8,12 +7,13 @@ class AtSignTest(unittest.TestCase):
     keys = None
 
     def setUp(self) -> None:
-        keys = KeysUtil.loadKeys("@27barracuda")
+        self.keys = KeysUtil.loadKeys("@27barracuda")
         return super().setUp()
     
     def testAtSignAuthentication(self):
+        print()
         atsign = AtSign("@27barracuda")
-        atsign.authenticate()
+        atsign.authenticate(self.keys)
         self.assertTrue(True)
 
 if __name__ == '__main__':
@@ -22,3 +22,4 @@ if __name__ == '__main__':
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
+    
