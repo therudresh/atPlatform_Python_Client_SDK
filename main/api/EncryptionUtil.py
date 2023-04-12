@@ -9,12 +9,10 @@ from cryptography.hazmat.primitives import padding
 
 class EncryptionUtil():
     iv = b'\x00'*16
-
+    
     @staticmethod
-    def signSHA256RSA(input_data, private_key):
-        hash_data = SHA256.new(input_data.encode('utf-8'))
-        signature = pkcs1_15.new(private_key).sign(hash_data)
-        return base64.b64encode(signature).decode('utf-8')
+    def aesDecryptFromBase64(clearText, keyBase64):
+        pass
 
     @staticmethod
     def aesDecryptFromBase64(encryptedText, selfEncryptionKey):
@@ -30,6 +28,32 @@ class EncryptionUtil():
 
         # Print the decrypted plaintext
         return plaintext.decode('utf-8')
+    
+    @staticmethod
+    def generateRSAKeyPair():
+        pass
+
+    @staticmethod
+    def generateAESKeyBase64():
+        pass
+
+    @staticmethod
+    def rsaDecryptFromBase64(cipherText, privateKeyBase64):
+        pass
+
+    @staticmethod
+    def rsaEncryptToBase64(clearText, publicKeyBase64):
+        pass
+
+    @staticmethod
+    def signSHA256RSA(input_data, private_key):
+        hash_data = SHA256.new(input_data.encode('utf-8'))
+        signature = pkcs1_15.new(private_key).sign(hash_data)
+        return base64.b64encode(signature).decode('utf-8')
+    
+    @staticmethod
+    def publicKeyFromBase64(s):
+        pass
 
     @staticmethod
     def privateKeyFromBase64(s):
@@ -37,13 +61,4 @@ class EncryptionUtil():
         key_spec = RSA.import_key(key_bytes)
         return key_spec
 
-    # @staticmethod
-    # def verify(public_key, signature, data):
-    #     key_bytes = base64.b64decode(public_key.encode('utf-8'))
-    #     key_spec = RSA.import_key(key_bytes)
-    #     try:
-    #         pkcs1_15.new(key_spec).verify(SHA256.new(data.encode('utf-8')), signature)
-    #         print("Signature Valid")
-    #     except Exception as e:
-    #         print(e, "Signature Invalid")
-    #     return key_spec
+    
