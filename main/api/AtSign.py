@@ -1,29 +1,22 @@
 import ssl, time
 
-from .atConnection import AtConnection
+from .atRootConnection import AtRootConnection
+from .atSecondaryConnection import AtSecondaryConnection
 from .EncryptionUtil import EncryptionUtil
 from .keysUtil import KeysUtil
 
 
 class AtSign:
-	atSign = ""
-	
-	rootHostname = 'root.atsign.org'
-	rootPort = 64
-	rootAtConnection = AtConnection(rootHostname, rootPort, ssl.create_default_context())
-	
-	secondaryAtConnection = None
 
 	def authenticate(self, keys): ## `from` protocol
 		privateKey = signature = None
-		self.secondaryAtConnection.write(f"from:{self.atSign}")
-		fromResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
-
+		fromResponse = self.secondaryConnection.executeCommand(f"from:{self.atSign}")
+	
 		dataPrefix = "data:"
 		if not fromResponse.startswith(dataPrefix):
 			raise Exception(f"Invalid response to 'from' command: {repr(fromResponse)}")
 		
-		fromResponse = fromResponse[len(dataPrefix):-1]
+		fromResponse = fromResponse[len(dataPrefix):]
 
 		try:
 			privateKey = EncryptionUtil.privateKeyFromBase64(keys[KeysUtil.pkamPrivateKeyName])
@@ -35,13 +28,13 @@ class AtSign:
 		except:
 			raise Exception("Failed to create SHA256 signature")
 		
-		self.secondaryAtConnection.write(f"pkam:{signature}")
-		pkamResponse = self.secondaryAtConnection.read()
+		pkamResponse = self.secondaryConnection.executeCommand(f"pkam:{signature}")
 
 		if not pkamResponse.startswith("data:success"):
 			raise Exception(f"PKAM command failed: {repr(pkamResponse)}")
 		
-		print("Authentication Successful")
+		if self.verbose:
+			print("Authentication Successful")
 
 	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
 	def LookUp(self, key : str, location : str):
@@ -49,16 +42,13 @@ class AtSign:
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
 
-		self.secondaryAtConnection.write(f"lookup:{key}{uLocation}")
-		lookupResponse = self.secondaryAtConnection.read().replace('\n', '').strip()[:-1]
+		lookupResponse = self.secondaryConnection.executeCommand(f"lookup:{key}{uLocation}")
 
 		return lookupResponse
 
 	def llookUp(self, key : str):
-		self.secondaryAtConnection.write(f"llookup:{key}{self.atSign}")
-
 		prefix = "data:"
-		lookupResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+		lookupResponse = self.secondaryConnection.executeCommand(f"llookup:{key}{self.atSign}")
 
 		if(not lookupResponse.startswith(prefix)):
 			print("llookup failed")
@@ -74,8 +64,7 @@ class AtSign:
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
-		self.secondaryAtConnection.write(f"update:{uLocation}:{key}{self.atSign} {value}")
-		updateResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+		updateResponse = self.secondaryConnection.executeCommand(f"update:{uLocation}:{key}{self.atSign} {value}")
 
 		if("data:" in updateResponse):
 			return True
@@ -85,8 +74,7 @@ class AtSign:
 
 
 	def lupdate(self, key : str, value : str):
-		self.secondaryAtConnection.write(f"update:{key}{self.atSign} {value}")
-		updateResponse = self.secondaryAtConnection.read().replace('\n', '').strip()
+		updateResponse = self.secondaryConnection.executeCommand(f"update:{key}{self.atSign} {value}")
 
 		if("data:" in updateResponse):
 			return True
@@ -112,33 +100,16 @@ class AtSign:
 	def monitor(self):
 		return True
 
-	def __init__(self, atSign : str):
+	def __init__(self, atSign, verbose=False):
 		if(atSign[0] == '@'):
 			self.atSign = atSign
 		else:
 			self.atSign = "@" + atSign
-		self.rootAtConnection.connect()
-		self.rootAtConnection.write(atSign[1:])
-
-		confirmationResponse =	self.rootAtConnection.read().replace('\r\n', '')
-
-		if confirmationResponse == "@":
-			print("Root connection successful")
-		else:
-			raise Exception("Root connection failed!!!")
+		self.verbose = verbose
+		self.rootConnection = AtRootConnection.getInstance(verbose=verbose)
 		
-		self.rootAtConnection.write(atSign[1:])
-		time.sleep(2)
-
 		#### Make this less error pruned :)
-		secondaryAtResponse =	self.rootAtConnection.read().replace('\r\n', '').replace('@','').split(':')
+		secondaryAddress = self.rootConnection.findSecondary(atSign).split(":")
 		
-		secondaryHostname = secondaryAtResponse[0]
-		secondaryPort = secondaryAtResponse[1]
-		self.secondaryAtConnection = AtConnection(secondaryHostname, secondaryPort, ssl.create_default_context())
-		self.secondaryAtConnection.connect()
-		confirmationResponse =	self.secondaryAtConnection.read().replace('\r\n', '')
-		if confirmationResponse == "@":
-			print("Secondary server connection successful")
-		else:
-			raise Exception("Secondary server connection failed!!!")
+		self.secondaryConnection = AtSecondaryConnection(host=secondaryAddress[0], port=secondaryAddress[1], verbose=verbose)
+		self.secondaryConnection.connect()
