@@ -19,10 +19,9 @@ class AesEncryption(Encryption):
 
     def __init__(self):
         self.iv = b'\x00' * 16
-        self.key = base64.b64decode(key_base64)
 
     def encrypt(self, plaintext, key, nonce):
-         """
+        """
         Encrypts the given plaintext using AES in CTR mode with a 256-bit key and returns
         the result as a Base64-encoded string.
 
@@ -71,6 +70,7 @@ class AesEncryption(Encryption):
         :return: The Base64-encoded ciphertext.
         :rtype: str
         """
+        key = base64.b64decode(key_base64)
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
         padded_text = clear_text.encode() + (AES.block_size - len(clear_text) % AES.block_size) * 
         chr(AES.block_size - len(clear_text) % AES.block_size).encode()
@@ -86,6 +86,7 @@ class AesEncryption(Encryption):
         :return: The Base64-decoded string.
         :rtype: str
         """
+        key = base64.b64decode(key_base64)
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
         decrypted = cipher.decrypt(base64.b64decode(encrypted_text))
         return decrypted.decode().rstrip(chr(AES.block_size - ord(decrypted[-1])))

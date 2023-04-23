@@ -77,21 +77,21 @@ class EncryptionUtil(AesEncryption, RsaEncryption):
         """
         self._rsa_keypair = self.generate_key_pair(bytes)
     
-    def aesDecryptFromBase64(self, clearText, keyBase64):
+    def aesEncryptFromBase64(self, clearText, keyBase64):
         """
-        Decrypts clearText using the provided keyBase64
+        Encrypts clearText using the provided keyBase64
         Parameters:
-        clearText(str): The text to decrypt
-        keyBase64(str): The key to use for decryption, as a base64 encoded string
+        clearText(str): The text to encrypt
+        keyBase64(str): The key to used for encryption, as a base64 encoded string
         """
         return AesEncryption.encrypt(self, clearText, keyBase64, self._nonce)
         
     def aesDecryptFromBase64(self, encryptedText, selfEncryptionKey):
          """
-        Encrypts plainText using the provided keyBase64
+        Encrypts clearText using the provided keyBase64
         Parameters:
-        plainText(str): The text to encrypt
-        keyBase64(str): The key to use for encryption, as a base64 encoded string
+        encryptedText(str): The text to decrypt
+        selfEncryptionKey(str): The key to use for decryption, as a base64 encoded string
         """
         ciphertext = binascii.a2b_base64(encryptedText)
         key = binascii.a2b_base64(selfEncryptionKey)
