@@ -183,3 +183,4 @@ class EncryptionUtil(AesEncryption, RsaEncryption):
         """
         # if client wants to generate a new key pair before fetching the private key, then run generateRSAKeyPair first
         return self._rsa_keypair[1]
+        
