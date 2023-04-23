@@ -15,51 +15,6 @@ sys.path.append('../proj_4a')
 # importing
 from encryption_util import *
 
-class TestEncryptionUtil(unittest.TestCase):
-
-    def setUp(self):
-        self.encryption_util = EncryptionUtil()
-
-    def test_aes_encryption_decryption(self):
-        key = b64decode(self.encryption_util.generateAESKeyBase64())
-        plain_text = 'This is a secret message'
-        encrypted_text = self.encryption_util.aesEncryptToBase64(plain_text, b64encode(key).decode('utf-8'))
-        decrypted_text = self.encryption_util.aesDecryptFromBase64(encrypted_text, b64encode(key).decode('utf-8'))
-        self.assertEqual(decrypted_text, plain_text)
-
-    def test_rsa_encryption_decryption(self):
-        key_pair = self.encryption_util.generateRSAKeyPair()
-        public_key = key_pair.publickey().export_key()
-        private_key = key_pair.export_key()
-        plain_text = 'This is a secret message'
-        encrypted_text = self.encryption_util.rsaEncryptToBase64(plain_text, b64encode(public_key).decode('utf-8'))
-        decrypted_text = self.encryption_util.rsaDecryptFromBase64(encrypted_text, b64encode(private_key).decode('utf-8'))
-        self.assertEqual(decrypted_text, plain_text)
-
-    def test_sign_sha256_rsa(self):
-        key_pair = self.encryption_util.generateRSAKeyPair()
-        private_key = key_pair.export_key()
-        public_key = key_pair.publickey().export_key()
-        data = b'This is some data to sign'
-        hashed_data = SHA256.new(data)
-        signature = self.encryption_util.signSHA256RSA(hashed_data, private_key)
-        verifier = pkcs1_15.new(RSA.import_key(public_key))
-        self.assertTrue(verifier.verify(hashed_data, signature))
-
-    
-import logging
-import unittest
-import binascii
-import secrets
-import base64
-from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
-from Crypto.Signature import pkcs1_15
-from cryptography.hazmat.primitives import padding
-from aes_encryption import *
-from rsa_encryption import *
-from encryption_util import *
-
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
 class TestEncryptionUtil(unittest.TestCase):
@@ -138,4 +93,3 @@ class TestEncryptionUtil(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
