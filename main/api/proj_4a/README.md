@@ -19,7 +19,16 @@ Usage:
 2) xyz_encryption is for individual implementation of an encryption algorithm, it has to implement the abstract class encryption.py and implement the abstract methods encrypt() and decrypt().
 
 Algorithm:
-
+1) AES key and initialization vector are generated.
+2) The base message is AES encrypted in the CTR mode using the keys and the initialization vector.
+3) The RSA public and private keys are generated.
+4) The AES key is base64 encoded.
+5) The encoded AES key is RSA signed using the RSA private key and 'SHA-256'.
+6) The encoded AES key is RSA encrypted using the RSA public key.
+7) At the client side, the AES key is decrypted using the RSA private key.
+8) The decrypted AES key is base64 decoded.
+9) The AES key is also verified using the RSA public key and the Signature.
+10) The message is finally obstained with AES decrypted using the AES key and initialization vector.
 
 
 Collaborators:
