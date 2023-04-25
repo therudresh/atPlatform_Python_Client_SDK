@@ -1,7 +1,0 @@
-cryptography
-pycryptodome
-rsa
-base64
-secrets
-hashlib
-Crypto.Cipher
