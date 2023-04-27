@@ -147,7 +147,7 @@ class AtSign:
 		if(location[0] == '@'):
 			uLocation = uLocation[1:]
 
-		lookupResponse = self.llookUp("shared_key." + uLocation)
+		lookupResponse = self.lLookUp("shared_key." + uLocation)
 
 		sharedAESKey = EncryptionUtil.generateAESKeyBase64()
 

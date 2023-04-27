@@ -53,6 +53,23 @@ class AtSignTest(unittest.TestCase):
 
         self.assertEqual("world", response)
 
+
+    def testAtSignUpdateAndLookUpSecure(self):
+        print()
+        amateur93Keys = KeysUtil.loadKeys("@amateur93")
+        universal27alooKeys = KeysUtil.loadKeys("@universal27aloo")
+
+        amateur93Atsign = AtSign("@amateur93", verbose=True)
+        universal27alooAtsign = AtSign("@universal27aloo", verbose=True)
+
+        amateur93Atsign.authenticate(amateur93Keys)
+        universal27alooAtsign.authenticate(universal27alooKeys)
+
+        amateur93Atsign.sUpdate(amateur93Keys, "foo", "bar", "universal27aloo")
+        response = universal27alooAtsign.slookUp(universal27alooKeys, "foo", "amateur93")
+
+        self.assertTrue(response == "bar")
+
 if __name__ == '__main__':
     loader = unittest.TestLoader()
     suite = loader.loadTestsFromTestCase(AtSignTest)
