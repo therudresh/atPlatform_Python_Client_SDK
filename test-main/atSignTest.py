@@ -4,8 +4,6 @@ from main.api.AtSign import AtSign
 from main.api.keysUtil import KeysUtil
 
 class AtSignTest(unittest.TestCase):
-    keysb = None
-    keyst = None
 
     def setUp(self):
         self.verbose = False
