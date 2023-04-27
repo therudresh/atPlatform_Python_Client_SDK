@@ -67,7 +67,7 @@ class AtConnection(ABC):
 			else:
 				return ""
 		except Exception as first:
-			self.disconnect()
+			# self.disconnect()
 
 			if retryOnException:
 				print(f"\tCaught exception {str(first)} : reconnecting")
