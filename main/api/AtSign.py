@@ -52,7 +52,7 @@ class AtSign:
 
 		return lookupResponse
 
-	def llookUp(self, key : str):
+	def lLookUp(self, key : str):
 		prefix = "data:"
 		lookupResponse = self.secondaryConnection.executeCommand(f"llookup:{key}{self.atSign}")
 
@@ -79,7 +79,7 @@ class AtSign:
 			return False
 
 
-	def lupdate(self, key : str, value : str):
+	def lUpdate(self, key : str, value : str):
 		updateResponse = self.secondaryConnection.executeCommand(f"update:{key}{self.atSign} {value}")
 
 		if("data:" in updateResponse):
