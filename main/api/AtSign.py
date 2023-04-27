@@ -1,5 +1,3 @@
-import ssl, time
-
 from .atRootConnection import AtRootConnection
 from .atSecondaryConnection import AtSecondaryConnection
 from .EncryptionUtil import EncryptionUtil
@@ -35,18 +33,26 @@ class AtSign:
 		
 		if self.verbose:
 			print("Authentication Successful")
+		
+		return True
 
 	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
-	def LookUp(self, key : str, location : str):
+	def lookUp(self, key : str, location : str):
+		prefix = "data:"
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
 
 		lookupResponse = self.secondaryConnection.executeCommand(f"lookup:{key}{uLocation}")
+		
+		if(not lookupResponse.startswith(prefix)):
+			print("llookup failed")
+		else:
+			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
 
 		return lookupResponse
 
-	def llookUp(self, key : str):
+	def lLookUp(self, key : str):
 		prefix = "data:"
 		lookupResponse = self.secondaryConnection.executeCommand(f"llookup:{key}{self.atSign}")
 
@@ -73,7 +79,7 @@ class AtSign:
 			return False
 
 
-	def lupdate(self, key : str, value : str):
+	def lUpdate(self, key : str, value : str):
 		updateResponse = self.secondaryConnection.executeCommand(f"update:{key}{self.atSign} {value}")
 
 		if("data:" in updateResponse):
