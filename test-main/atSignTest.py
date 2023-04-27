@@ -7,7 +7,7 @@ class AtSignTest(unittest.TestCase):
     keys = None
 
     def setUp(self):
-        self.keys = KeysUtil.loadKeys("@27barracuda")
+        self.keys = KeysUtil.loadKeys("27barracuda")
         return super().setUp()
     
     def testAtSignAuthentication(self):

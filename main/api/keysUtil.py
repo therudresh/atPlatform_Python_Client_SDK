@@ -19,6 +19,7 @@ class KeysUtil:
 
     @staticmethod
     def saveKeys(atSign, keys):
+        if atSign[0] != "@": atSign = f"@{atSign}"
         expectedKeysDirectory = os.path.dirname(KeysUtil.expectedKeysFilesLocation)
         os.makedirs(expectedKeysDirectory, exist_ok=True)
         file = KeysUtil.getKeysFile(atSign, KeysUtil.expectedKeysFilesLocation)
@@ -39,6 +40,7 @@ class KeysUtil:
 
     @staticmethod
     def loadKeys(atSign):
+        if atSign[0] != "@": atSign = f"@{atSign}"
         file = KeysUtil.getKeysFile(atSign, KeysUtil.expectedKeysFilesLocation)
         if not os.path.exists(file):
             file = KeysUtil.getKeysFile(atSign, KeysUtil.legacyKeysFilesLocation)

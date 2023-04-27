@@ -1,8 +1,10 @@
-import base64, binascii
+import base64, binascii, os
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
+from Crypto.Cipher import PKCS1_v1_5
 
+from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -11,54 +13,62 @@ class EncryptionUtil():
     iv = b'\x00'*16
     
     @staticmethod
-    def aesDecryptFromBase64(clearText, keyBase64):
-        pass
+    def aesEncryptFromBase64(clearText, keyBase64):
+        clearText64 = clearText
+        key = binascii.a2b_base64(keyBase64)
+        cipher = Cipher(algorithms.AES(key), modes.CTR(EncryptionUtil.iv), backend=default_backend())
+        encryptor = cipher.encryptor()
+        padder = padding.PKCS7(algorithms.AES.block_size).padder()
+        paddedPlaintext = padder.update(clearText64) + padder.finalize()
+        cipherText = encryptor.update(paddedPlaintext) + encryptor.finalize()
+        return base64.b64encode(cipherText).decode()
 
     @staticmethod
     def aesDecryptFromBase64(encryptedText, selfEncryptionKey):
-        ciphertext = binascii.a2b_base64(encryptedText)
+        cipherText = binascii.a2b_base64(encryptedText)
         key = binascii.a2b_base64(selfEncryptionKey)
         cipher = Cipher(algorithms.AES(key), modes.CTR(EncryptionUtil.iv), backend=default_backend())
         decryptor = cipher.decryptor()
-        plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+        plainText = decryptor.update(cipherText) + decryptor.finalize()
 
-        # Unpad the plaintext using PKCS7 padding
+        # Unpad the plainText using PKCS7 padding
         padder = padding.PKCS7(algorithms.AES.block_size).unpadder()
-        plaintext = padder.update(plaintext) + padder.finalize()
+        plainText = padder.update(plainText) + padder.finalize()
 
         # Print the decrypted plaintext
-        return plaintext.decode('utf-8')
+        return plainText.decode('utf-8')
     
     @staticmethod
     def generateRSAKeyPair():
-        pass
+        return RSA.generate(2048)
 
     @staticmethod
     def generateAESKeyBase64():
-        pass
+        return base64.b64encode(os.urandom(32)).decode("utf-8")
 
     @staticmethod
     def rsaDecryptFromBase64(cipherText, privateKeyBase64):
-        pass
+        privateKey = EncryptionUtil.RSAKeyFromBase64(privateKeyBase64)
+        cipher = PKCS1_v1_5.new(privateKey)
+        decoded = base64.b64decode(cipherText)
+        decryptedBytes = cipher.decrypt(decoded, None)
+        return decryptedBytes.decode('utf-8')
 
     @staticmethod
     def rsaEncryptToBase64(clearText, publicKeyBase64):
-        pass
+        publicKey = EncryptionUtil.RSAKeyFromBase64(publicKeyBase64)
+        cipher = PKCS1_v1_5.new(publicKey)
+        clearTextBytes = clearText.encode('utf-8')
+        encryptedBytes = cipher.encrypt(clearTextBytes)
+        return base64.b64encode(encryptedBytes).decode('utf-8')
 
     @staticmethod
-    def signSHA256RSA(input_data, private_key):
-        hash_data = SHA256.new(input_data.encode('utf-8'))
-        signature = pkcs1_15.new(private_key).sign(hash_data)
+    def signSHA256RSA(inputData, privateKey):
+        hashData = SHA256.new(inputData.encode('utf-8'))
+        signature = pkcs1_15.new(privateKey).sign(hashData)
         return base64.b64encode(signature).decode('utf-8')
     
     @staticmethod
-    def publicKeyFromBase64(s):
-        pass
-
-    @staticmethod
-    def privateKeyFromBase64(s):
-        key_bytes = base64.b64decode(s.encode('utf-8'))
-        key_spec = RSA.import_key(key_bytes)
-        return key_spec
-
-    
+    def RSAKeyFromBase64(s):
+        keyBytes = base64.b64decode(s.encode('utf-8'))
+        return RSA.import_key(keyBytes)
