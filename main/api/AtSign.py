@@ -19,7 +19,7 @@ class AtSign:
 		fromResponse = fromResponse[len(dataPrefix):]
 
 		try:
-			privateKey = EncryptionUtil.privateKeyFromBase64(keys[KeysUtil.pkamPrivateKeyName])
+			privateKey = EncryptionUtil.RSAKeyFromBase64(keys[KeysUtil.pkamPrivateKeyName])
 		except:
 			raise Exception("Failed to get private key from stored string")
 		
