@@ -88,3 +88,25 @@ class RsaEncryption(Encryption):
         except:
             return False
     
+# Example usage of RsaEncryption class, uncomment everything below and run this file for demo output
+   
+# rsa_encryption = RsaEncryption()
+
+# (public_key, private_key) = rsa_encryption.generate_key_pair()
+
+# message = "Hello, world!"
+# encrypted_message = rsa_encryption.encrypt(message, public_key)
+
+# decrypted_message = rsa_encryption.decrypt(encrypted_message, private_key)
+
+# signature = rsa_encryption.sign(message, private_key)
+
+# is_valid_signature = rsa_encryption.verify(message, signature, public_key)
+
+# print("Public Key:", public_key)
+# print("Private Key:", private_key)
+# print("Original Message:", message)
+# print("Encrypted Message:", encrypted_message)
+# print("Decrypted Message:", decrypted_message)
+# print("Signature:", signature)
+# print("Is Valid Signature?", is_valid_signature)
