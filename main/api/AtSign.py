@@ -36,7 +36,6 @@ class AtSign:
 		
 		return True
 
-	## RT: FYI There are multiple types of look ups will require more than one lookup funtion
 	def lookUp(self, key : str, location : str):
 		prefix = "data:"
 		uLocation = location
@@ -47,6 +46,26 @@ class AtSign:
 		
 		if(not lookupResponse.startswith(prefix)):
 			print("llookup failed")
+		else:
+			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
+
+		if(not lookupResponse.startswith(prefix)):
+			print("lookup failed")
+		else:
+			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
+
+		return lookupResponse
+
+	def plookUp(self, key : str, location : str):
+		prefix = "data:"
+		uLocation = location
+		if(location[0] != '@'):
+			uLocation = "@" + uLocation
+
+		lookupResponse = self.secondaryConnection.executeCommand(f"plookup:{key}{uLocation}")
+
+		if(not lookupResponse.startswith(prefix)):
+			print("plookup failed")
 		else:
 			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
 
@@ -63,8 +82,27 @@ class AtSign:
 
 		return lookupResponse
 
-	def connectToAtSign(atSign):
-		return True
+	def slookUp(self, keys, key : str, location : str):
+		prefix = "error:"
+		uLocation = location
+		
+		if(location[0] == '@'):
+			uLocation = uLocation[1:]
+
+		lookupResponse = self.lookUp("shared_key", uLocation)
+
+		if(lookupResponse.startswith(prefix)):
+			return "ERROR: No sharedkeys to decrypt"
+		else:
+			sharedAESKey = EncryptionUtil.rsaDecryptFromBase64(lookupResponse, keys[KeysUtil.encryptionPrivateKeyName])
+
+			lookupValueResponse = self.lookUp(key, uLocation)
+
+			if(not lookupValueResponse.startswith(prefix)):
+				decrypeddValue = EncryptionUtil.aesDecryptFromBase64(lookupValueResponse, sharedAESKey)
+				return decrypeddValue;
+			else:
+				return "ERROR: No key found"
 
 	def update(self, key : str, value : str, location : str):
 		uLocation = location
@@ -78,6 +116,62 @@ class AtSign:
 			print(f"Update Failed: {updateResponse}")
 			return False
 
+	def publicKeyUpdate(self, keyShare, location : str, time : str):
+		uLocation = location
+		if(location[0] != '@'):
+			uLocation = "@" + uLocation
+		updateResponse = self.secondaryConnection.executeCommand(f"update:ttr:{time}:{uLocation}:publickey{self.atSign} {keyShare}")
+
+		if("data:" in updateResponse):
+			return True
+		else:
+			print(f"Update Failed: {updateResponse}")
+			return False
+
+	def sharedKeyUpdate(self, keyShare, location : str, time : str):
+		uLocation = location
+		if(location[0] != '@'):
+			uLocation = "@" + uLocation
+		updateResponse = self.secondaryConnection.executeCommand(f"update:ttr:{time}:{uLocation}:shared_key{self.atSign} {keyShare}")
+
+		if("data:" in updateResponse):
+			return True
+		else:
+			print(f"Update Failed: {updateResponse}")
+			return False
+
+	def sUpdate(self, keys, key : str, value : str, location : str):
+		prefix = "error:"
+		uLocation = location
+		
+		if(location[0] == '@'):
+			uLocation = uLocation[1:]
+
+		lookupResponse = self.lLookUp("shared_key." + uLocation)
+
+		sharedAESKey = EncryptionUtil.generateAESKeyBase64()
+
+		if(not lookupResponse.startswith(prefix)):
+			sharedAESKey = EncryptionUtil.rsaDecryptFromBase64(lookupResponse, keys[KeysUtil.pkamPrivateKeyName])
+		else:
+			lookupPKResponse = self.plookUp("publickey", uLocation)
+			if(not lookupPKResponse.startswith(prefix)):
+				encryptedSharedAESKey = EncryptionUtil.rsaEncryptToBase64(sharedAESKey, lookupPKResponse)
+				self.sharedKeyUpdate(encryptedSharedAESKey, location, "86400")
+			else:
+				return False
+
+		encryptedValue = EncryptionUtil.aesEncryptFromBase64(value.encode('utf-8'), sharedAESKey)
+
+		updateResponse = self.secondaryConnection.executeCommand(f"update:@{uLocation}:{key}{self.atSign} {encryptedValue}")
+
+		if("data:" in updateResponse):
+			return True
+		else:
+			print(f"Update Failed: {updateResponse}")
+			return False
+
+		return True
 
 	def lUpdate(self, key : str, value : str):
 		updateResponse = self.secondaryConnection.executeCommand(f"update:{key}{self.atSign} {value}")
@@ -89,22 +183,28 @@ class AtSign:
 			return False
 		
 
-	def delete(self):
-		return True
+	def delete(self, key : str):
+		delResponse = self.secondaryConnection.executeCommand(f"delete:{key}{self.atSign}")
+
+		if("data:" in delResponse):
+			return True
+		else:
+			print(f"Self delete Failed: {delResponse}")
+			return False
 
 
 	## Good to have functions
-	def stats(self):
-		return True
+	# def stats(self):
+	# 	return True
 
-	def sync(self):
-		return True
+	# def sync(self):
+	# 	return True
 
-	def notify(self):
-		return True
+	# def notify(self):
+	# 	return True
 
-	def monitor(self):
-		return True
+	# def monitor(self):
+	# 	return True
 
 	def __init__(self, atSign, verbose=False):
 		if(atSign[0] == '@'):
