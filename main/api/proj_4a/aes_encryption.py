@@ -117,18 +117,17 @@ class AesEncryption(Encryption):
 
 # # Example usage of AesEncryption class (CTR) --> MAIN, uncomment everything below and run this file for demo output
 
-aes = AesEncryption()
-aes_key = secrets.token_bytes(32)
-# aes_key = base64.b64encode(aes_key)
-iv = b'\x00' * 16
-plain_text = 'This is a sample plaintext to encrypt using AES CTR mode.'
-nonce = secrets.token_bytes(16)
-plain_text = plain_text.encode()
-cipher_text = aes.encrypt(plain_text, aes_key, nonce)
-print("Encrypted %s to :%s " % (plain_text, cipher_text)) 
-decrypted = aes.decrypt(cipher_text, aes_key, nonce)
-print(decrypted == plain_text)
-print(decrypted.decode('utf-8') == plain_text.decode('utf-8'))
+# aes = AesEncryption()
+# aes_key = secrets.token_bytes(32)
+# iv = b'\x00' * 16
+# plain_text = 'This is a sample plaintext to encrypt using AES CTR mode.'
+# nonce = secrets.token_bytes(16)
+# plain_text = plain_text.encode()
+# cipher_text = aes.encrypt(plain_text, aes_key, nonce)
+# print("Encrypted %s to :%s " % (plain_text, cipher_text)) 
+# decrypted = aes.decrypt(cipher_text, aes_key, nonce)
+# print(decrypted == plain_text)
+# print(decrypted.decode('utf-8') == plain_text.decode('utf-8'))
 
 """ Sample OP:
     Encrypted b'This is a sample plaintext to encrypt using AES CTR mode.' to :vfGNYptPKqyqE19IcNof+jCankh6Iyvd2sYGueZ8jdxf/AVUs5CxV4UXpUYbEzA9NAPovA9BfIKErbvfueDPhQ== 
