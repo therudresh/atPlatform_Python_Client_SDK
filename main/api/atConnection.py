@@ -2,6 +2,7 @@ import socket
 
 from abc import ABC, abstractmethod
 
+# The AtConnection class is an abstract base class that provides a common interface and functionality for connecting to and communicating with an @ protocol server. It defines the basic methods and attributes required for establishing a connection, sending and receiving data, and parsing raw responses. Methods include write(data), read(), isConnected(), connect(), disconnect(), parseRawResponse(rawResponse), executeCommand(command, retryOnException=0, readTheResponse=True), str(), and init(host, port, context, verbose=False).
 class AtConnection(ABC):
 	url = ""
 	host = ""
