@@ -1,6 +1,7 @@
 import ssl
 from .atConnection import AtConnection
 
+# The AtSecondaryConnection class is a subclass of AtConnection and represents a connection to a secondary server in the @ protocol. It inherits methods from the parent class to establish a connection, send commands, and parse responses. It also inherits executeCommand(), isConnected(), disconnect(), write(), read(), and str() methods.
 class AtSecondaryConnection(AtConnection):
 
     def __init__(self, host, port, context=ssl.create_default_context(), verbose=False):
