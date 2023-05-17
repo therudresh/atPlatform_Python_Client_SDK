@@ -1,6 +1,7 @@
 import ssl
 from .atConnection import AtConnection
 
+# The AtRootConnection class is a subclass of AtConnection and represents a connection to the root server in the @ protocol. It provides methods to establish a connection, send commands, and parse responses specific to the root server. It includes getInstance(host='root.atsign.org', port=64, context=ssl.create_default_context(), verbose=False), init(host, port, context, verbose), connect(), parseRawResponse(rawResponse), findSecondary(atSign), and lookupAtSign(atSign).
 class AtRootConnection(AtConnection):
     __instance = None
 
