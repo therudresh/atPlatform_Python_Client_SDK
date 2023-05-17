@@ -3,7 +3,7 @@ from .atSecondaryConnection import AtSecondaryConnection
 from .EncryptionUtil import EncryptionUtil
 from .keysUtil import KeysUtil
 
-
+# The AtSign class provides a way to communicate with the @ protocol servers. It includes functions such as authenticate(keys), lookUp(key, location), plookUp(key, location), lLookUp(key), slookUp(keys, key, location), update(key, value, location), publicKeyUpdate(keyShare, location, time), sharedKeyUpdate(keyShare, location, time), and sUpdate(keys, key, value, location). These functions are used to authenticate, lookup, update, and perform other operations on the @ protocol servers.
 class AtSign:
 
 	def authenticate(self, keys): ## `from` protocol
