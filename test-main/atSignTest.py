@@ -10,6 +10,7 @@ class AtSignTest(unittest.TestCase):
         return super().setUp()
 
     def testAtSignAuthentication(self):
+        """Test AtSign authentication."""
         print()
         keys = KeysUtil.loadKeys("@amateur93")
         atsign = AtSign("@amateur93", verbose=self.verbose)
@@ -18,6 +19,7 @@ class AtSignTest(unittest.TestCase):
         
 
     def testMultipleAtSignAuthentication(self):
+        """Test multiple AtSign authentication."""
         print()
         universal27alooKeys = KeysUtil.loadKeys("@universal27aloo")
         universal27alooAtsign = AtSign("@universal27aloo", verbose=self.verbose)
@@ -28,6 +30,7 @@ class AtSignTest(unittest.TestCase):
         self.assertTrue(amateur93Atsign.authenticate(amateur93Keys))
 
     def testAtSignLocalUpdateAndLocalLookup(self):
+        """Test AtSign local update and local lookup."""
         print()
         keys = KeysUtil.loadKeys("@amateur93")
         atsign = AtSign("@amateur93", verbose=self.verbose)
@@ -37,6 +40,7 @@ class AtSignTest(unittest.TestCase):
         self.assertEqual("bar", response)
 
     def testAtSignUpdateAndLookup(self):
+        """Test AtSign update and lookup."""
         print()
         universal27alooKeys = KeysUtil.loadKeys("@universal27aloo")
         universal27alooAtsign = AtSign("@universal27aloo", verbose=self.verbose)
@@ -53,6 +57,7 @@ class AtSignTest(unittest.TestCase):
 
 
     def testAtSignUpdateAndLookUpSecure(self):
+        """Test AtSign update and secure lookup."""
         print()
         amateur93Keys = KeysUtil.loadKeys("@amateur93")
         universal27alooKeys = KeysUtil.loadKeys("@universal27aloo")
