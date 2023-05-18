@@ -3,10 +3,11 @@ from .atSecondaryConnection import AtSecondaryConnection
 from .EncryptionUtil import EncryptionUtil
 from .keysUtil import KeysUtil
 
-# The AtSign class provides a way to communicate with the @ protocol servers. It includes functions such as authenticate(keys), lookUp(key, location), plookUp(key, location), lLookUp(key), slookUp(keys, key, location), update(key, value, location), publicKeyUpdate(keyShare, location, time), sharedKeyUpdate(keyShare, location, time), and sUpdate(keys, key, value, location). These functions are used to authenticate, lookup, update, and perform other operations on the @ protocol servers.
-class AtSign:
 
+class AtSign:
+  """Represents an AtSign object."""
 	def authenticate(self, keys): ## `from` protocol
+		"""Authenticate the AtSign."""
 		privateKey = signature = None
 		fromResponse = self.secondaryConnection.executeCommand(f"from:{self.atSign}")
 	
@@ -37,6 +38,7 @@ class AtSign:
 		return True
 
 	def lookUp(self, key : str, location : str):
+		"""Look up a key in the specified location."""
 		prefix = "data:"
 		uLocation = location
 		if(location[0] != '@'):
@@ -57,6 +59,7 @@ class AtSign:
 		return lookupResponse
 
 	def plookUp(self, key : str, location : str):
+		"""Look up a key in the specified location."""
 		prefix = "data:"
 		uLocation = location
 		if(location[0] != '@'):
@@ -72,6 +75,7 @@ class AtSign:
 		return lookupResponse
 
 	def lLookUp(self, key : str):
+		"""Look up a key in the local location."""
 		prefix = "data:"
 		lookupResponse = self.secondaryConnection.executeCommand(f"llookup:{key}{self.atSign}")
 
@@ -83,6 +87,7 @@ class AtSign:
 		return lookupResponse
 
 	def slookUp(self, keys, key : str, location : str):
+		"""Look up a key in itself."""
 		prefix = "error:"
 		uLocation = location
 		
@@ -207,6 +212,7 @@ class AtSign:
 	# 	return True
 
 	def __init__(self, atSign, verbose=False):
+		"""Initialize the AtSign object."""
 		if(atSign[0] == '@'):
 			self.atSign = atSign
 		else:
