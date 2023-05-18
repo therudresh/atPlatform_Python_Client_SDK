@@ -5,10 +5,12 @@ from main.api.EncryptionUtil import EncryptionUtil
 
 class EncryptionUtilTest(unittest.TestCase):
     def setUp(self):
+        """Set up the test case."""
         self.keys = KeysUtil.loadKeys("@27barracuda")
         return super().setUp()
     
     def testAESEncryptionDecryption(self):
+        """Test AES encryption and decryption."""
         print()
         plainText = b"abcd"
         encryptedText = EncryptionUtil.aesEncryptFromBase64(plainText, self.keys[KeysUtil.selfEncryptionKeyName])
@@ -16,6 +18,7 @@ class EncryptionUtilTest(unittest.TestCase):
         self.assertEqual(plainText.decode("utf-8"), decryptedText)
 
     def testRSAEncryptionDecryption(self):
+        """Test RSA encryption and decryption."""
         print()
         plainText = "abcd"
         encryptedText = EncryptionUtil.rsaEncryptToBase64(plainText, self.keys[KeysUtil.pkamPublicKeyName])
@@ -23,6 +26,7 @@ class EncryptionUtilTest(unittest.TestCase):
         self.assertEqual(plainText, decryptedText)
 
     def testGenerateAESKey(self):
+        """Test generating an AES key and encryption/decryption using the key."""
         print()
         secretKey = EncryptionUtil.generateAESKeyBase64()
         plainText = b"XYZ"
@@ -31,6 +35,7 @@ class EncryptionUtilTest(unittest.TestCase):
         self.assertEqual(plainText.decode("utf-8"), decryptedText)
     
     def testGenerateRSAKeys(self):
+        """Test generating RSA key pair and encryption/decryption using the keys."""
         print()
         keyPair = EncryptionUtil.generateRSAKeyPair()
         plainText = "RSA"
