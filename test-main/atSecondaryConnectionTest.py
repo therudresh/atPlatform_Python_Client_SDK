@@ -6,6 +6,7 @@ from main.api.atSecondaryConnection import AtSecondaryConnection
 class AtSecondaryConnectionTest(unittest.TestCase):
 
     def testSecondaryConnection(self):
+        """Test secondary connection establishment."""
         print()
         rootConnection = AtRootConnection.getInstance(verbose=True)
         secondaryAddress = rootConnection.findSecondary("@27barracuda")
@@ -15,6 +16,7 @@ class AtSecondaryConnectionTest(unittest.TestCase):
         self.assertTrue(secondaryConnection.isConnected())
 
     def testSecondaryConnectionFailure(self):
+        """Test secondary connection failure."""
         print()
         try:
             rootConnection = AtRootConnection.getInstance(verbose=True)
@@ -26,6 +28,7 @@ class AtSecondaryConnectionTest(unittest.TestCase):
             self.assertEqual("[Errno 8] nodename nor servname provided, or not known", str(e))
 
     def testMultipleSecondaryConnections(self):
+        """Test multiple secondary connections."""
         print()
         rootConnection = AtRootConnection.getInstance(verbose=True)
         secondaryAddress1 = rootConnection.findSecondary("@27barracuda").split(":")
