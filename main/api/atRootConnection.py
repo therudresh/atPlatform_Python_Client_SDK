@@ -1,17 +1,20 @@
 import ssl
 from .atConnection import AtConnection
 
-# The AtRootConnection class is a subclass of AtConnection and represents a connection to the root server in the @ protocol. It provides methods to establish a connection, send commands, and parse responses specific to the root server. It includes getInstance(host='root.atsign.org', port=64, context=ssl.create_default_context(), verbose=False), init(host, port, context, verbose), connect(), parseRawResponse(rawResponse), findSecondary(atSign), and lookupAtSign(atSign).
+
 class AtRootConnection(AtConnection):
+	"""Subclass of AtConnection representing a connection to the root server in the @ protocol."""
     __instance = None
 
     @staticmethod
     def getInstance(host='root.atsign.org', port=64, context=ssl.create_default_context(), verbose=False):
+	  """Get an instance of AtRootConnection using the singleton pattern."""
         if AtRootConnection.__instance is None:
             AtRootConnection(host, port, context, verbose)
         return AtRootConnection.__instance
 
     def __init__(self, host, port, context, verbose):
+	"""Initialize the AtRootConnection object."""
         self.host = host
         self.port = port
         self.context = context
@@ -23,11 +26,13 @@ class AtRootConnection(AtConnection):
             super().__init__(host, port, context, verbose)
     
     def connect(self):
+	"""Establish a connection to the root server."""
         super().connect()
         if self.verbose:
             print("Root Connection Successful")
 
     def parseRawResponse(self, rawResponse):
+	"""Parse the raw response from the root server."""
         # responses from root are either 'null' or <host:port>
         
         if rawResponse.endswith("@"):
@@ -36,6 +41,7 @@ class AtRootConnection(AtConnection):
         return rawResponse.strip()
 
     def findSecondary(self, atSign):
+	"""Find the secondary server for the given @ sign on the root server."""
         if not self.isConnected():
             try:
                 self.connect()
@@ -54,6 +60,7 @@ class AtRootConnection(AtConnection):
                 raise Exception(f"Received malformed response {response} from lookup of {atSign} on root server")
 
     def lookupAtSign(self, atSign):
+	"""Lookup the @ sign on the root server and return the secondary server."""
         return self.findSecondary(atSign).toString()
 
 	
