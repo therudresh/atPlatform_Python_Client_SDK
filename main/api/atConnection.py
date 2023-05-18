@@ -2,7 +2,9 @@ import socket
 
 from abc import ABC, abstractmethod
 
-  """
+  
+class AtConnection(ABC):
+       """
     Abstract base class for connecting to and communicating with an @ protocol server.
 
     ...
@@ -45,8 +47,6 @@ from abc import ABC, abstractmethod
     executeCommand(command, retryOnException=0, readTheResponse=True)
         Execute a command and retrieve the response from the server.
     """
-class AtConnection(ABC):
-        """Abstract base class for connecting to and communicating with an @ protocol server."""
 	url = ""
 	host = ""
 	port = -1
@@ -56,7 +56,9 @@ class AtConnection(ABC):
 	context = None
 	_socket = None
 
-	  """
+	 
+	def write(self, data : str):
+		 """
         Write data to the socket.
 
         Parameters
@@ -64,12 +66,12 @@ class AtConnection(ABC):
         data : str
             The data to be written to the socket.
         """
-	def write(self, data : str):
-		 """Write data to the socket."""
 		## implement multi send / a loop to send larger data size
 		self.secureRootSocket.write(data.encode())
 
-		  """
+		  
+	def read(self):
+		"""
         Read data from the socket.
 
         Returns
@@ -77,8 +79,6 @@ class AtConnection(ABC):
         str
             The data read from the socket.
         """
-	def read(self):
-		"""Read data from the socket."""
 		## Make return type a bit more typed and try to remove 2048 size cap (make it streamy)
 		response = b''
 		data = self.secureRootSocket.read(2048)
@@ -86,7 +86,9 @@ class AtConnection(ABC):
 		return response.decode()
 
 
-	  """
+	  
+	def isConnected(self):
+		"""
         Check if the connection is established.
 
         Returns
@@ -94,8 +96,6 @@ class AtConnection(ABC):
         bool
             True if the connection is established, False otherwise.
         """
-	def isConnected(self):
-		"""Check if the connection is established."""
 		return self.connected
 
 	def connect(self):
@@ -117,7 +117,10 @@ class AtConnection(ABC):
 		self.secureRootSocket.close()
 		self.connected = False
 
-		    """
+		   
+	@abstractmethod
+	def parseRawResponse(self, rawResponse):
+		 """
         Parse the raw response from the server.
 
         Parameters
@@ -125,12 +128,11 @@ class AtConnection(ABC):
         rawResponse : str
             The raw response received from the server.
         """
-	@abstractmethod
-	def parseRawResponse(self, rawResponse):
-		"""Parse the raw response from the server."""
 		pass
 
-	  """
+	  
+	def executeCommand(self, command, retryOnException=0, readTheResponse=True):
+		"""
         Execute a command and retrieve the response from the server.
 
         Parameters
@@ -147,8 +149,6 @@ class AtConnection(ABC):
         str
             The response from the server.
         """
-	def executeCommand(self, command, retryOnException=0, readTheResponse=True):
-		"""Execute a command and retrieve the response from the server."""
 		try:
 			if not command.endswith("\n"):
 				command += "\n"
@@ -182,7 +182,9 @@ class AtConnection(ABC):
 				self.connected = False
 				raise Exception(str(first))
 
-				    """
+				   
+	def __str__(self):
+		 """
         Return a string representation of the AtConnection object.
 
         Returns
@@ -190,10 +192,11 @@ class AtConnection(ABC):
         str
             A string representation of the AtConnection object in the format "host:port".
         """
-	def __str__(self):
 		return f"{self.host}:{self.port}"
 
-		    """
+		   
+	def __init__(self, host, port, context, verbose=False):
+		 """
         Initialize the AtConnection object.
 
         Parameters
@@ -207,8 +210,6 @@ class AtConnection(ABC):
         verbose : bool, optional
             Indicates if verbose output is enabled (default is False).
         """
-	def __init__(self, host, port, context, verbose=False):
-		"""Initialize the AtConnection object."""
 		self.host = host
 		self.port = port
 		self.context = context
