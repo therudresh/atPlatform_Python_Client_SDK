@@ -1,10 +1,36 @@
 import ssl
 from .atConnection import AtConnection
 
+    """
+    Subclass of AtConnection representing a connection to a secondary server in the @ protocol.
 
+    ...
+
+    Methods
+    -------
+    __init__(self, host, port, context=ssl.create_default_context(), verbose=False)
+        Initialize the AtSecondaryConnection object.
+    connect(self)
+        Establish a connection to the secondary server.
+    parseRawResponse(rawResponse)
+        Parse the raw response from the secondary server.
+    """
 class AtSecondaryConnection(AtConnection):
-    """Subclass of AtConnection representing a connection to a secondary server in the @ protocol."""
 
+      """
+        Initialize the AtSecondaryConnection object.
+
+        Parameters
+        ----------
+        host : str
+            The host name or IP address of the secondary server.
+        port : int
+            The port number of the secondary server.
+        context : ssl.SSLContext, optional
+            The SSL context for secure connections (default is ssl.create_default_context()).
+        verbose : bool, optional
+            Indicates if verbose output is enabled (default is False).
+        """
     def __init__(self, host, port, context=ssl.create_default_context(), verbose=False):
         """Initialize the AtSecondaryConnection object."""
         super().__init__(host, port, context, verbose)
@@ -15,6 +41,19 @@ class AtSecondaryConnection(AtConnection):
         if self.verbose:
             print(f"Secondary Connection Successful")
 
+              """
+        Parse the raw response from the secondary server.
+
+        Parameters
+        ----------
+        rawResponse : str
+            The raw response received from the secondary server.
+
+        Returns
+        -------
+        str
+            The parsed response from the secondary server.
+        """
     def parseRawResponse(self, rawResponse):
         """Parse the raw response from the secondary server."""
         if rawResponse.endswith("@"):
