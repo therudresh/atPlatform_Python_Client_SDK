@@ -5,18 +5,21 @@ from main.api.atRootConnection import AtRootConnection
 class AtRootConnectionTest(unittest.TestCase):
 
     def testRootConnection(self):
+        """Test root connection establishment."""
         print()
         rootConnection = AtRootConnection.getInstance(verbose=True)
         rootConnection.connect()
         self.assertTrue(rootConnection.isConnected())
 
     def testFindSecondary(self):
+        """Test finding a secondary server address."""
         print()
         rootConnection = AtRootConnection.getInstance(verbose=True)
         secondaryAddress = rootConnection.findSecondary("@27barracuda")
         self.assertIsNotNone(secondaryAddress)
 
     def testFindSecondaryFailure(self):
+        """Test finding a secondary server address for a non-existent AtSign."""
         print()
         try:
             rootConnection = AtRootConnection.getInstance(verbose=True)
@@ -25,6 +28,7 @@ class AtRootConnectionTest(unittest.TestCase):
             self.assertEqual("Root lookup returned null for @wrongAtSign", str(e))
 
     def testFindMultipleSecondaryAddresses(self):
+        """Test finding multiple secondary server addresses."""
         print()
         rootConnection = AtRootConnection.getInstance(verbose=True)
         secondaryAddress1 = rootConnection.findSecondary("@27barracuda").split(":")
