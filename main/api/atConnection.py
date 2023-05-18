@@ -2,8 +2,9 @@ import socket
 
 from abc import ABC, abstractmethod
 
-# The AtConnection class is an abstract base class that provides a common interface and functionality for connecting to and communicating with an @ protocol server. It defines the basic methods and attributes required for establishing a connection, sending and receiving data, and parsing raw responses. Methods include write(data), read(), isConnected(), connect(), disconnect(), parseRawResponse(rawResponse), executeCommand(command, retryOnException=0, readTheResponse=True), str(), and init(host, port, context, verbose=False).
+
 class AtConnection(ABC):
+        """Abstract base class for connecting to and communicating with an @ protocol server."""
 	url = ""
 	host = ""
 	port = -1
@@ -14,10 +15,12 @@ class AtConnection(ABC):
 	_socket = None
 
 	def write(self, data : str):
+		 """Write data to the socket."""
 		## implement multi send / a loop to send larger data size
 		self.secureRootSocket.write(data.encode())
 
 	def read(self):
+		"""Read data from the socket."""
 		## Make return type a bit more typed and try to remove 2048 size cap (make it streamy)
 		response = b''
 		data = self.secureRootSocket.read(2048)
@@ -26,9 +29,11 @@ class AtConnection(ABC):
 
 
 	def isConnected(self):
+		"""Check if the connection is established."""
 		return self.connected
 
 	def connect(self):
+		"""Establish a connection to the server."""
 		if not self.connected:
 			try:
 				self._socket.connect(self.addrInfo)
@@ -42,14 +47,17 @@ class AtConnection(ABC):
 			self.read()
 
 	def disconnect(self):
+		"""Close the connection."""
 		self.secureRootSocket.close()
 		self.connected = False
 
 	@abstractmethod
 	def parseRawResponse(self, rawResponse):
+		"""Parse the raw response from the server."""
 		pass
 
 	def executeCommand(self, command, retryOnException=0, readTheResponse=True):
+		"""Execute a command and retrieve the response from the server."""
 		try:
 			if not command.endswith("\n"):
 				command += "\n"
@@ -87,6 +95,7 @@ class AtConnection(ABC):
 		return f"{self.host}:{self.port}"
 
 	def __init__(self, host, port, context, verbose=False):
+		"""Initialize the AtConnection object."""
 		self.host = host
 		self.port = port
 		self.context = context
