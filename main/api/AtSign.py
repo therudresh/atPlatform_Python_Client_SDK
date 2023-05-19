@@ -38,6 +38,7 @@ class AtSign:
 
 	def lookUp(self, key : str, location : str):
 		prefix = "data:"
+		errorPrefix = "error:"
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
@@ -49,10 +50,8 @@ class AtSign:
 		else:
 			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
 
-		if(not lookupResponse.startswith(prefix)):
+		if(lookupResponse.startswith(errorPrefix)):
 			print("lookup failed")
-		else:
-			lookupResponse = lookupResponse[len(prefix):-(len(self.atSign) + 1)]
 
 		return lookupResponse
 
