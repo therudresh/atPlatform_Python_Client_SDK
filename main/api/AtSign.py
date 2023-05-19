@@ -3,10 +3,68 @@ from .atSecondaryConnection import AtSecondaryConnection
 from .EncryptionUtil import EncryptionUtil
 from .keysUtil import KeysUtil
 
-
 class AtSign:
+	"""
+Represents an AtSign object.
 
+Attributes
+----------
+atSign : str
+    the AtSign name
+verbose : bool
+    flag indicating verbosity of output
+rootConnection : AtRootConnection
+    instance of AtRootConnection for root connection
+secondaryConnection : AtSecondaryConnection
+    instance of AtSecondaryConnection for secondary connection
+
+Methods
+-------
+authenticate(keys)
+    Authenticate the AtSign.
+lookUp(key, location)
+    Look up a key in the specified location.
+plookUp(key, location)
+    Look up a key in the specified location using a public lookup.
+lLookUp(key)
+    Look up a key in the local location.
+slookUp(keys, key, location)
+    Look up a key in itself using secure lookup.
+update(key, value, location)
+    Update a key-value pair in the specified location.
+publicKeyUpdate(keyShare, location, time)
+    Update a public key in the specified location.
+sharedKeyUpdate(keyShare, location, time)
+    Update a shared key in the specified location.
+sUpdate(keys, key, value, location)
+    Update a key-value pair in itself using secure update.
+lUpdate(key, value)
+    Update a key-value pair in the local location.
+delete(key)
+    Delete a key-value pair in itself.
+__init__(atSign, verbose=False)
+    Initialize the AtSign object.
+"""
+	  
 	def authenticate(self, keys): ## `from` protocol
+		 """
+    Authenticate the AtSign.
+
+    Parameters
+    ----------
+    keys : dict
+        Dictionary containing the required keys for authentication
+
+    Returns
+    -------
+    bool
+        True if authentication is successful, False otherwise
+
+    Raises
+    ------
+    Exception
+        If authentication fails or an error occurs during the authentication process
+    """
 		privateKey = signature = None
 		fromResponse = self.secondaryConnection.executeCommand(f"from:{self.atSign}")
 	
@@ -36,7 +94,23 @@ class AtSign:
 		
 		return True
 
+	 
 	def lookUp(self, key : str, location : str):
+		 """
+    Look up a key in the specified location.
+
+    Parameters
+    ----------
+    key : str
+        The key to look up
+    location : str
+        The location to search for the key
+
+    Returns
+    -------
+    str
+        The value associated with the key if found, or an error message if the lookup fails
+    """
 		prefix = "data:"
 		errorPrefix = "error:"
 		uLocation = location
@@ -55,7 +129,23 @@ class AtSign:
 
 		return lookupResponse
 
+	 
 	def plookUp(self, key : str, location : str):
+		"""
+    Look up a key in the specified location using a public lookup.
+
+    Parameters
+    ----------
+    key : str
+        The key to look up
+    location : str
+        The location to search for the key
+
+    Returns
+    -------
+    str
+        The value associated with the key if found, or an error message if the lookup fails
+    """
 		prefix = "data:"
 		uLocation = location
 		if(location[0] != '@'):
@@ -70,7 +160,21 @@ class AtSign:
 
 		return lookupResponse
 
+	
 	def lLookUp(self, key : str):
+		 """
+    Look up a key in the local location.
+
+    Parameters
+    ----------
+    key : str
+        The key to look up
+
+    Returns
+    -------
+    str
+        The value associated with the key if found, or an error message if the lookup fails
+    """
 		prefix = "data:"
 		lookupResponse = self.secondaryConnection.executeCommand(f"llookup:{key}{self.atSign}")
 
@@ -81,7 +185,25 @@ class AtSign:
 
 		return lookupResponse
 
+	
 	def slookUp(self, keys, key : str, location : str):
+		 """
+    Look up a key in itself using secure lookup.
+
+    Parameters
+    ----------
+    keys : dict
+        Dictionary containing the required keys for secure lookup
+    key : str
+        The key to look up
+    location : str
+        The location to search for the key
+
+    Returns
+    -------
+    str
+        The decrypted value associated with the key if found, or an error message if the lookup fails
+    """
 		prefix = "error:"
 		uLocation = location
 		
@@ -103,7 +225,25 @@ class AtSign:
 			else:
 				return "ERROR: No key found"
 
+			
 	def update(self, key : str, value : str, location : str):
+		"""
+    Update a key-value pair in the specified location.
+
+    Parameters
+    ----------
+    key : str
+        The key to update
+    value : str
+        The new value to associate with the key
+    location : str
+        The location to update the key-value pair
+
+    Returns
+    -------
+    bool
+        True if the update is successful, False otherwise
+    """
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
@@ -115,7 +255,25 @@ class AtSign:
 			print(f"Update Failed: {updateResponse}")
 			return False
 
+		
 	def publicKeyUpdate(self, keyShare, location : str, time : str):
+		"""
+    Update a public key in the specified location with a given time-to-refresh (TTR).
+
+    Parameters
+    ----------
+    keyShare : str
+        The new public key value to update
+    location : str
+        The location to update the public key
+    time : str
+        The time-to-refresh (TTR) value
+
+    Returns
+    -------
+    bool
+        True if the update is successful, False otherwise
+    """
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
@@ -127,7 +285,25 @@ class AtSign:
 			print(f"Update Failed: {updateResponse}")
 			return False
 
+		
 	def sharedKeyUpdate(self, keyShare, location : str, time : str):
+		"""
+    Update a shared key in the specified location with a given time-to-refresh (TTR).
+
+    Parameters
+    ----------
+    keyShare : str
+        The new shared key value to update
+    location : str
+        The location to update the shared key
+    time : str
+        The time-to-refresh (TTR) value
+
+    Returns
+    -------
+    bool
+        True if the update is successful, False otherwise
+    """
 		uLocation = location
 		if(location[0] != '@'):
 			uLocation = "@" + uLocation
@@ -139,7 +315,27 @@ class AtSign:
 			print(f"Update Failed: {updateResponse}")
 			return False
 
+		
 	def sUpdate(self, keys, key : str, value : str, location : str):
+		"""
+    Securely update a key-value pair in itself.
+
+    Parameters
+    ----------
+    keys : dict
+        Dictionary containing the required keys for secure update
+    key : str
+        The key to update
+    value : str
+        The new value to associate with the key
+    location : str
+        The location to update the key-value pair
+
+    Returns
+    -------
+    bool
+        True if the update is successful, False otherwise
+    """
 		prefix = "error:"
 		uLocation = location
 		
@@ -172,7 +368,23 @@ class AtSign:
 
 		return True
 
+	
 	def lUpdate(self, key : str, value : str):
+		"""
+    Update a key-value pair in the local location.
+
+    Parameters
+    ----------
+    key : str
+        The key to update
+    value : str
+        The new value to associate with the key
+
+    Returns
+    -------
+    bool
+        True if the update is successful, False otherwise
+    """
 		updateResponse = self.secondaryConnection.executeCommand(f"update:{key}{self.atSign} {value}")
 
 		if("data:" in updateResponse):
@@ -182,7 +394,21 @@ class AtSign:
 			return False
 		
 
+	
 	def delete(self, key : str):
+			"""
+    Delete a key-value pair in itself.
+
+    Parameters
+    ----------
+    key : str
+        The key to delete
+
+    Returns
+    -------
+    bool
+        True if the delete is successful, False otherwise
+    """
 		delResponse = self.secondaryConnection.executeCommand(f"delete:{key}{self.atSign}")
 
 		if("data:" in delResponse):
@@ -205,7 +431,18 @@ class AtSign:
 	# def monitor(self):
 	# 	return True
 
+	
 	def __init__(self, atSign, verbose=False):
+		"""
+    Initialize the AtSign object.
+
+    Parameters
+    ----------
+    atSign : str
+        The AtSign name
+    verbose : bool, optional
+        Flag indicating verbosity of output (default is False)
+    """
 		if(atSign[0] == '@'):
 			self.atSign = atSign
 		else:
