@@ -1,10 +1,9 @@
 import socket
-
 from abc import ABC, abstractmethod
 
-  
+
 class AtConnection(ABC):
-       """
+    """
     Abstract base class for connecting to and communicating with an @ protocol server.
 
     ...
@@ -47,18 +46,17 @@ class AtConnection(ABC):
     executeCommand(command, retryOnException=0, readTheResponse=True)
         Execute a command and retrieve the response from the server.
     """
-	url = ""
-	host = ""
-	port = -1
-	connected = False
+    url = ""
+    host = ""
+    port = -1
+    connected = False
 
-	addrInfo = None
-	context = None
-	_socket = None
+    addrInfo = None
+    context = None
+    _socket = None
 
-	 
-	def write(self, data : str):
-		 """
+    def write(self, data: str):
+        """
         Write data to the socket.
 
         Parameters
@@ -66,12 +64,11 @@ class AtConnection(ABC):
         data : str
             The data to be written to the socket.
         """
-		## implement multi send / a loop to send larger data size
-		self.secureRootSocket.write(data.encode())
+        ## implement multi send / a loop to send larger data size
+        self.secureRootSocket.write(data.encode())
 
-		  
-	def read(self):
-		"""
+    def read(self):
+        """
         Read data from the socket.
 
         Returns
@@ -79,16 +76,14 @@ class AtConnection(ABC):
         str
             The data read from the socket.
         """
-		## Make return type a bit more typed and try to remove 2048 size cap (make it streamy)
-		response = b''
-		data = self.secureRootSocket.read(2048)
-		response += data
-		return response.decode()
+        ## Make return type a bit more typed and try to remove 2048 size cap (make it streamy)
+        response = b''
+        data = self.secureRootSocket.read(2048)
+        response += data
+        return response.decode()
 
-
-	  
-	def isConnected(self):
-		"""
+    def isConnected(self):
+        """
         Check if the connection is established.
 
         Returns
@@ -96,31 +91,32 @@ class AtConnection(ABC):
         bool
             True if the connection is established, False otherwise.
         """
-		return self.connected
+        return self.connected
 
-	def connect(self):
-		"""Establish a connection to the server."""
-		if not self.connected:
-			try:
-				self._socket.connect(self.addrInfo)
-				self.secureRootSocket = self.context.wrap_socket(self._socket, server_hostname=self.host, do_handshake_on_connect = True)
-			except OSError as e:
-				if str(e) == '119':
-					print("In Progress")
-				else:
-					raise e
-			self.connected = True
-			self.read()
+    def connect(self):
+        """Establish a connection to the server."""
+        if not self.connected:
+            try:
+                self._socket.connect(self.addrInfo)
+                self.secureRootSocket = self.context.wrap_socket(
+                    self._socket, server_hostname=self.host, do_handshake_on_connect=True
+                )
+            except OSError as e:
+                if str(e) == '119':
+                    print("In Progress")
+                else:
+                    raise e
+            self.connected = True
+            self.read()
 
-	def disconnect(self):
-		"""Close the connection."""
-		self.secureRootSocket.close()
-		self.connected = False
+    def disconnect(self):
+        """Close the connection."""
+        self.secureRootSocket.close()
+        self.connected = False
 
-		   
-	@abstractmethod
-	def parseRawResponse(self, rawResponse):
-		 """
+    @abstractmethod
+    def parseRawResponse(self, rawResponse):
+        """
         Parse the raw response from the server.
 
         Parameters
@@ -128,11 +124,10 @@ class AtConnection(ABC):
         rawResponse : str
             The raw response received from the server.
         """
-		pass
+        pass
 
-	  
-	def executeCommand(self, command, retryOnException=0, readTheResponse=True):
-		"""
+    def executeCommand(self, command, retryOnException=0, readTheResponse=True):
+        """
         Execute a command and retrieve the response from the server.
 
         Parameters
@@ -149,42 +144,41 @@ class AtConnection(ABC):
         str
             The response from the server.
         """
-		try:
-			if not command.endswith("\n"):
-				command += "\n"
-			self.write(command)
+        try:
+            if not command.endswith("\n"):
+                command += "\n"
+            self.write(command)
 
-			if self.verbose:
-				print(f"\tSENT: {repr(command.strip())}")
+            if self.verbose:
+                print(f"\tSENT: {repr(command.strip())}")
 
-			if readTheResponse:
-				# Responses are always terminated by newline
-				rawResponse = self.read()
-				if self.verbose:
-					print(f"\tRCVD: {repr(rawResponse)}")
+            if readTheResponse:
+                # Responses are always terminated by newline
+                rawResponse = self.read()
+                if self.verbose:
+                    print(f"\tRCVD: {repr(rawResponse)}")
 
-				return self.parseRawResponse(rawResponse)
-			else:
-				return ""
-		except Exception as first:
-			# self.disconnect()
+                return self.parseRawResponse(rawResponse)
+            else:
+                return ""
+        except Exception as first:
+            # self.disconnect()
 
-			if retryOnException:
-				print(f"\tCaught exception {str(first)} : reconnecting")
-				try:
-					self.connect()
-					return self.executeCommand(command, False, True)
-				except Exception as second:
-					import traceback
-					traceback.print_exc()
-					raise Exception(f"Failed to reconnect after original exception {str(first)} : ", second)
-			else:
-				self.connected = False
-				raise Exception(str(first))
+            if retryOnException:
+                print(f"\tCaught exception {str(first)} : reconnecting")
+                try:
+                    self.connect()
+                    return self.executeCommand(command, False, True)
+                except Exception as second:
+                    import traceback
+                    traceback.print_exc()
+                    raise Exception(f"Failed to reconnect after original exception {str(first)} : ", second)
+            else:
+                self.connected = False
+                raise Exception(str(first))
 
-				   
-	def __str__(self):
-		 """
+    def __str__(self):
+        """
         Return a string representation of the AtConnection object.
 
         Returns
@@ -192,11 +186,10 @@ class AtConnection(ABC):
         str
             A string representation of the AtConnection object in the format "host:port".
         """
-		return f"{self.host}:{self.port}"
+        return f"{self.host}:{self.port}"
 
-		   
-	def __init__(self, host, port, context, verbose=False):
-		 """
+    def __init__(self, host, port, context, verbose=False):
+        """
         Initialize the AtConnection object.
 
         Parameters
@@ -210,12 +203,10 @@ class AtConnection(ABC):
         verbose : bool, optional
             Indicates if verbose output is enabled (default is False).
         """
-		self.host = host
-		self.port = port
-		self.context = context
-		self.addrInfo = socket.getaddrinfo(host, port)[0][-1]
-		self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-		self.secureRootSocket = None
-		self.verbose = verbose
-
-		
+        self.host = host
+        self.port = port
+        self.context = context
+        self.addrInfo = socket.getaddrinfo(host, port)[0][-1]
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.secureRootSocket = None
+        self.verbose = verbose

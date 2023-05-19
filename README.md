@@ -4,6 +4,8 @@
 
 ## How to Use
 
+Create keys directory inside root folder and copy the atSign .atKeys files to run the code.
+
 ### Terminal
 
 ```python
